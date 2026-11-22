@@ -70,7 +70,7 @@ Crea una migración nueva en `supabase/migrations/` (nombre con fecha, por ejemp
 
 **En Supabase real:** `supabase db reset` y luego corre `supabase/tests/rls.sql` contra la base local (`psql`).
 
-**En un PostgreSQL común y vacío** (sin Supabase; usa un shim que imita auth y storage):
+**En un PostgreSQL común y vacío** (sin Supabase; usa un simulador que imita auth y storage):
 ```bash
 DATABASE_URL=postgres://usuario@localhost:5432/base_vacia ./supabase/tests/correr_pruebas.sh
 ```
