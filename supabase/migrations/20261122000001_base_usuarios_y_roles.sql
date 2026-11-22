@@ -1,9 +1,7 @@
 -- T-02 · Migración 1 de 4: tipos, tabla usuarios, roles y funciones de apoyo.
 -- Pensada para Supabase (PostgreSQL). Se puede correr desde cero en un proyecto nuevo.
 
--- ---------------------------------------------------------------------------
 -- Tipos
--- ---------------------------------------------------------------------------
 create type public.rol_usuario as enum ('usuario', 'operador', 'admin');
 
 -- Las 4 categorías del R1 (HU-02): DNI, cartera, celular, laptop.
@@ -12,9 +10,7 @@ create type public.categoria_objeto as enum ('celular', 'laptop', 'cartera', 'dn
 create type public.estado_perdida as enum ('activa', 'emparejada', 'en_entrega', 'cerrada', 'vencida');
 create type public.estado_hallazgo as enum ('publicado', 'emparejado', 'en_entrega', 'cerrado', 'vencido');
 
--- ---------------------------------------------------------------------------
 -- Usuarios (perfil de la app; la autenticación vive en auth.users de Supabase)
--- ---------------------------------------------------------------------------
 create table public.usuarios (
   id          uuid primary key references auth.users (id) on delete cascade,
   celular     text unique check (celular ~ '^9[0-9]{8}$'),   -- celular peruano de 9 dígitos
@@ -28,10 +24,8 @@ create table public.usuarios (
 
 comment on table public.usuarios is 'Perfil de cada persona. rol, verificado y bloqueado solo los cambia el servidor.';
 
--- ---------------------------------------------------------------------------
 -- Funciones de apoyo para las políticas RLS
 -- security definer: leen usuarios sin pasar por sus propias reglas (evita recursión).
--- ---------------------------------------------------------------------------
 create function public.usuario_activo()
 returns boolean
 language sql stable security definer
@@ -69,10 +63,8 @@ revoke all on function public.usuario_activo(), public.es_operador_o_admin(), pu
 grant execute on function public.usuario_activo(), public.es_operador_o_admin(), public.es_admin()
   to authenticated, service_role;
 
--- ---------------------------------------------------------------------------
 -- Al crear una cuenta en Supabase Auth se crea su perfil automáticamente.
 -- Tolerante: si el celular no tiene el formato esperado, queda en null y el registro no falla.
--- ---------------------------------------------------------------------------
 create function public.crear_perfil_usuario()
 returns trigger
 language plpgsql security definer
