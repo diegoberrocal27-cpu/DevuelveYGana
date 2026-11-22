@@ -33,11 +33,27 @@ Ojo con una limitación de fondo: quien encuentra un DNI o una cartera **puede l
 - **Errores genéricos:** un DNI inválido da `datos inválidos` y no repite lo recibido.
 - **Límite de intentos:** 5 intentos con DNI por hora y por usuario, y 20 por hora y por IP (**valores iniciales, a calibrar**). Cada intento cuenta, sea válido o no. El prototipo guarda los contadores en memoria; **en producción deben estar en un lugar compartido** (una tabla de Supabase o Redis/KV), porque cada instancia de Vercel tiene su propia memoria.
 
-## 4. Pruebas
+## 4. Cómo está organizado el prototipo
+
+Cada archivo tiene una sola razón para cambiar, y las piezas se conectan por lo que hacen, no por cómo están hechas:
+
+| Archivo | Responsabilidad |
+|---|---|
+| `dni-hmac.mjs` | calcular el HMAC del DNI y de la fecha de emisión; recibe la clave, no la busca solo |
+| `rasgos.mjs` | qué rasgos tiene cada categoría y cuántos se exigen |
+| `limitador.mjs`, `limite-de-intentos.mjs` | contar intentos; la segunda une el límite por usuario y por IP |
+| `vistas-publicas.mjs` | la lista blanca de campos que sale al público |
+| `publicar-hallazgo.mjs` | las reglas de publicar un hallazgo; no sabe nada de HTTP |
+| `almacen-en-memoria.mjs` | donde se guardan los datos; el caso de uso solo conoce sus métodos, así que luego se cambia por Supabase sin tocarlo |
+| `api-publica.mjs` | recibir la petición HTTP y devolver la respuesta |
+
+Agregar una categoría o una ruta nueva no obliga a editar las reglas de las otras.
+
+## 5. Pruebas
 
 | Qué | Dónde | Resultado |
 |---|---|---|
-| HMAC, rasgos, limitador y API pública (sin sesión) | `node --test prototipos/sp-02/sp02.test.mjs` | 17 de 17 |
+| HMAC, rasgos, limitador y API pública (sin sesión) | `node --test prototipos/sp-02/sp02.test.mjs` | 23 de 23 |
 | El DNI no se filtra por la base de datos (reglas RLS de T-02) | `prototipos/sp-02/rls_dni.sql` | 9 de 9 |
 
 Las dos suites se comprobaron también rompiendo la seguridad a propósito (catálogo que expone la descripción, respuesta que revela la coincidencia, sin límite de intentos, hash simple, permiso de lectura de `dni_hmac`, política que abre los rasgos al operador): cada sabotaje hizo fallar la prueba correspondiente.
@@ -46,11 +62,13 @@ Las dos suites se comprobaron también rompiendo la seguridad a propósito (cat�
 - **Las rutas reales de la API.** Hoy no existen rutas de Next.js; el prototipo es una API de mentira con los mismos criterios. La prueba hay que **repetirla contra las rutas reales** cuando se construya HU-02 (pedir la lista pública sin sesión y comprobar que no sale ningún rasgo ni DNI).
 - **Un Supabase real.** `rls_dni.sql` se corrió en un PostgreSQL común con el esquema de T-02 y un imitador de `auth` y `storage`, no en Supabase.
 
-## 5. Para quien construya HU-02 y HU-04
+## 6. Para quien construya HU-02 y HU-04
 
 1. Calcular el HMAC **solo en el servidor** (`hmacDni`) y guardar el resultado; el número no se registra ni en logs.
 2. Para emparejar, agregar una migración nueva con un índice parcial: `create index on public.rasgos_ocultos (valor_protegido) where tipo = 'dni_hmac';`.
 3. Aplicar el límite de intentos en toda ruta que reciba un DNI, y devolver siempre la misma respuesta con o sin coincidencia.
+4. Detrás de Vercel, la IP de quien llama viene en la cabecera `x-forwarded-for`, no en la conexión. Hay que leerla de ahí, o el límite por IP contaría a todos juntos.
+5. Si falta la clave, la ruta debe fallar con error del servidor (500), no con "datos inválidos", para que el problema se note.
 
 ## Cómo correr
 
