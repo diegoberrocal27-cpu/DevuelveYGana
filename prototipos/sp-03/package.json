@@ -1,0 +1,12 @@
+{
+  "name": "sp-03-foto-difuminada",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test sp03.test.mjs",
+    "medir": "node medir.mjs"
+  },
+  "dependencies": {
+    "sharp": "^0.34.0"
+  }
+}
