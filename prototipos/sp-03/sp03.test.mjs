@@ -66,3 +66,9 @@ test("la copia no se parece a la original en el detalle fino", async () => {
   }
   assert.ok(cambios / copia.data.length < 0.01, "quedan bordes duros: el texto podría seguir legible");
 });
+
+test("se puede pedir otro ancho y otro nivel de difuminado", async () => {
+  const copia = await difuminarFoto(foto, { ancho: 200, difuminado: 0, calidad: 80 });
+  const { width } = await sharp(copia).metadata();
+  assert.equal(width, 200);
+});

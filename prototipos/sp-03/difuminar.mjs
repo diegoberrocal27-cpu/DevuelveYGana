@@ -1,15 +1,12 @@
 import sharp from "sharp";
 
-export const ANCHO_MAXIMO = 320;
-export const NIVEL_DIFUMINADO = 10;
-export const CALIDAD_JPEG = 55;
+export const PARAMETROS_POR_DEFECTO = { ancho: 320, difuminado: 10, calidad: 55 };
 export const PIXELES_MAXIMOS = 60_000_000;
 
-export async function difuminarFoto(original) {
-  return sharp(original, { limitInputPixels: PIXELES_MAXIMOS })
+export async function difuminarFoto(original, { ancho, difuminado, calidad } = PARAMETROS_POR_DEFECTO) {
+  let foto = sharp(original, { limitInputPixels: PIXELES_MAXIMOS })
     .rotate()
-    .resize({ width: ANCHO_MAXIMO, height: ANCHO_MAXIMO, fit: "inside", withoutEnlargement: true })
-    .blur(NIVEL_DIFUMINADO)
-    .jpeg({ quality: CALIDAD_JPEG, mozjpeg: true })
-    .toBuffer();
+    .resize({ width: ancho, height: ancho, fit: "inside", withoutEnlargement: true });
+  if (difuminado > 0) foto = foto.blur(difuminado);
+  return foto.jpeg({ quality: calidad, mozjpeg: true }).toBuffer();
 }
