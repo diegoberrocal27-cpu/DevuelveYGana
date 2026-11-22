@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Prueba T-02 en un PostgreSQL común y VACÍO (sin Supabase):
 #   DATABASE_URL=postgres://usuario@localhost:5432/prueba_vacia ./supabase/tests/correr_pruebas.sh
-# Pasos: shim de Supabase -> migraciones desde cero -> seed -> pruebas RLS ->
+# Pasos: simulador de Supabase -> migraciones desde cero -> seed -> pruebas RLS ->
 #        migración posterior de ejemplo -> pruebas RLS otra vez.
 # En el proyecto real de Supabase usa `supabase db reset` (corre migraciones + seed) y luego solo el paso de pruebas.
 set -euo pipefail
@@ -9,8 +9,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."   # carpeta supabase/
 psql_() { psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q "$@"; }
 
-echo "== Shim de Supabase (solo para Postgres común)"
-psql_ -f tests/shim_supabase_local.sql
+echo "== Simulador de Supabase (solo para Postgres común)"
+psql_ -f tests/simulador_supabase_local.sql
 echo "== Migraciones desde cero"
 for f in migrations/*.sql; do echo "   $f"; psql_ -f "$f"; done
 echo "== Seed"
