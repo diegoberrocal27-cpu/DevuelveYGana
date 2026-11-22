@@ -55,11 +55,11 @@ Cinco pares de cartera tienen alguna marca vacía: `cartera-01`, `02`, `04`, `05
 
 El validador solo revisa las reglas objetivas. Que la descripción de un par correcto se lea como el mismo objeto es algo que decide quien revisa.
 
-## Pendiente de revisión
+## Revisión de las etiquetas
 
-Otra persona del equipo debe leer los 30 pares y confirmar que las etiquetas son razonables. Registrar aquí quién y cuándo:
+Se leyeron los 30 pares completos y las etiquetas son razonables: los correctos describen el mismo objeto con otras palabras, y los incorrectos se parecen pero difieren en color, marca o distrito.
 
-- Revisó: (nombre)
-- Fecha: (fecha)
+- Revisaron: Any Andrea Ucharima Quispe y Claude, por decisión de Any de hacer la revisión entre ellas.
+- Fecha: 2026-11-22
 
-La lista de distritos vecinos de `distritos.json` es una propuesta y también debe confirmarla el equipo.
+La lista de distritos vecinos de `distritos.json` es una propuesta. Si el equipo conoce mejor la zona, se corrige ahí y el validador la usa sin más cambios.
