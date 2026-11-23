@@ -54,6 +54,11 @@ export async function POST(request: Request) {
     }
     const resultado = await operar(datos.accion);
     if (resultado.estado !== "enviar") return Response.json(resultado);
+    // Solo en desarrollo y sin Twilio configurado: el código se muestra en la terminal del servidor.
+    if (process.env.NODE_ENV !== "production" && !process.env.TWILIO_ACCOUNT_SID) {
+      console.info(`[registro] Código para ${resultado.destino}: ${codigo} (modo desarrollo, sin WhatsApp)`);
+      return Response.json({ estado: "enviado" });
+    }
     try {
       const sid = variable("TWILIO_ACCOUNT_SID");
       const respuesta = await fetch("https://api.twilio.com/2010-04-01/Accounts/" + encodeURIComponent(sid) + "/Messages.json", {

@@ -1,0 +1,64 @@
+"use client";
+
+import { useState, type InputHTMLAttributes, type Ref } from "react";
+import { estiloAyuda, estiloError, estiloEtiqueta } from "./estilosCampo";
+
+type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "accept"> & {
+  name: string;
+  etiqueta: string;
+  error?: string;
+  ayuda?: string;
+  ref?: Ref<HTMLInputElement>;
+};
+
+/** Campo para elegir una foto (cámara o galería) y ver el nombre del archivo elegido. */
+export default function CampoFoto({ name, id, etiqueta, error, ayuda, required, onChange, ref, ...resto }: Props) {
+  const idCampo = id ?? name;
+  const [nombre, setNombre] = useState("");
+  const idAyuda = ayuda ? `${idCampo}-ayuda` : undefined;
+  const idError = error ? `${idCampo}-error` : undefined;
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className={estiloEtiqueta}>
+        {etiqueta}
+        {required && <span className="text-error"> *</span>}
+      </span>
+      <label
+        htmlFor={idCampo}
+        className={`flex min-h-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed bg-superficie p-4 text-center text-sm ${
+          error ? "border-error" : "border-borde hover:border-turquesa"
+        }`}
+      >
+        <span className="font-semibold text-turquesa-oscuro">{nombre ? "Cambiar foto" : "Tomar o elegir una foto"}</span>
+        <span className="text-texto-secundario">{nombre || "JPG, PNG o WebP"}</span>
+      </label>
+      <input
+        ref={ref}
+        id={idCampo}
+        name={name}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        required={required}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={[idAyuda, idError].filter(Boolean).join(" ") || undefined}
+        className="sr-only"
+        onChange={(evento) => {
+          setNombre(evento.target.files?.[0]?.name ?? "");
+          onChange?.(evento);
+        }}
+        {...resto}
+      />
+      {ayuda && (
+        <p id={idAyuda} className={estiloAyuda}>
+          {ayuda}
+        </p>
+      )}
+      {error && (
+        <p id={idError} className={estiloError}>
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
