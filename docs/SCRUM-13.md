@@ -2,7 +2,7 @@
 
 ## Activarlo en desarrollo
 
-1. En Supabase de **desarrollo** aplica, en este orden, las migraciones de T-02, `20261123000001_registro.sql` (SCRUM-12) y `20261123000002_registrar_perdida.sql`. La última crea `limites_de_uso`, `consumir_intento` y `registrar_perdida`.
+1. En Supabase de **desarrollo** aplica, en este orden, las migraciones de T-02, `20261123000001_registro.sql` (SCRUM-12), `20261123000002_registrar_perdida.sql` (crea `limites_de_uso`, `consumir_intento` y `registrar_perdida`) y `20261123000003_permisos_service_role.sql`. La última da al servidor permiso sobre las tablas aunque el proyecto se haya creado sin acceso automático a la API.
 2. Agrega a `web/.env.local` (y a Vercel) la clave que protege el DNI:
 
 ```dotenv
@@ -33,3 +33,9 @@ Genérala una vez por entorno con `openssl rand -hex 32` (mínimo 32 caracteres)
 | 409 | `limite` | Ya tiene la pérdida activa permitida |
 | 429 | `demasiados_intentos` | Límite de intentos de DNI |
 | 503 | `error` | Falla del servidor o de la base |
+
+## Prueba contra Supabase real
+
+`supabase/tests/prueba_real_hu02.sql` se pega en el editor SQL del proyecto. Crea tres cuentas de prueba, ejecuta 17 comprobaciones y termina con un error a propósito para no dejar datos; el mensaje del error trae los resultados. Resultado en el proyecto `devuelveygana-dev` (23-11-2026): las 17 pasan; registrar una pérdida tarda unos 10 ms dentro de la base.
+
+Lo que sigue sin probarse contra Supabase real es la capa HTTP (Auth y PostgREST) con la ruta `/api/perdidas` en marcha, porque el entorno de desarrollo del asistente no puede llegar a `supabase.co`. Hay que hacerlo en una máquina con `web/.env.local` configurado.
