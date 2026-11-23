@@ -27,7 +27,7 @@ export default function PantallaEncontre() {
       <Link href="/perfil" className={estilosBoton("primario", true)}>
         {sinSesion ? "Crear mi cuenta o entrar" : "Verificar mi celular"}
       </Link>
-      <Link href="/hallazgos" className={estilosBoton("secundario", true)}>
+      <Link href="/perdi" className={estilosBoton("secundario", true)}>
         Ver objetos encontrados
       </Link>
     </div>

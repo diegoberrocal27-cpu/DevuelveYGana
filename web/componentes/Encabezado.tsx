@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import AvatarSesion from "./AvatarSesion";
 
 export default function Encabezado() {
   return (
     <header className="sticky top-0 z-20 border-b border-borde bg-superficie">
-      <div className="mx-auto flex h-14 max-w-md items-center px-4 md:max-w-3xl">
+      <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4 md:max-w-3xl">
         <Link href="/" aria-label="DevuelveyGana, ir al inicio">
           <Image
             src="/logo-devuelveygana.png"
@@ -14,6 +15,7 @@ export default function Encabezado() {
             className="h-8 w-auto"
           />
         </Link>
+        <AvatarSesion />
       </div>
     </header>
   );

@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import Aviso, { type TipoAviso } from "@/componentes/Aviso";
-import Boton, { estilosBoton } from "@/componentes/Boton";
+import Boton from "@/componentes/Boton";
 import CampoTexto from "@/componentes/CampoTexto";
+import { IconoEscudo, IconoFlecha } from "@/componentes/iconosCategoria";
 import Selector from "@/componentes/Selector";
 import { DISTRITOS } from "@/lib/catalogos";
 import { clienteDelNavegador } from "@/lib/supabase-navegador";
@@ -58,7 +58,8 @@ const mensajes: Record<string, string> = {
 function mensajeDeAuth(error: { code?: string; message?: string; status?: number }): string {
   const codigo = error.code ?? "";
   if (codigo === "invalid_credentials") return "Correo o contraseña incorrectos.";
-  if (codigo === "email_not_confirmed") return "Primero confirma tu correo con el enlace que te enviamos.";
+  if (codigo === "email_not_confirmed") return "Primero confirma tu correo con el código que te enviamos.";
+  if (codigo === "otp_expired") return "El código es incorrecto o ya venció. Pide uno nuevo.";
   if (codigo === "weak_password") return `La contraseña es muy débil. Usa al menos ${LARGO_MINIMO_CLAVE} caracteres.`;
   if (codigo === "same_password") return "La nueva contraseña debe ser distinta de la anterior.";
   if (codigo.includes("rate_limit") || error.status === 429) {
@@ -92,7 +93,7 @@ function CamposCelularYDistrito() {
         pattern="9[0-9]{8}"
         maxLength={9}
         required
-        ayuda="9 dígitos, empezando por 9. Lo verificaremos por WhatsApp una sola vez."
+        ayuda="9 dígitos, empezando por 9."
       />
       <Selector name="distrito" etiqueta="Distrito de residencia" opciones={opcionesDistrito} required />
     </>
@@ -111,6 +112,7 @@ export default function Pagina() {
   const [ahora, setAhora] = useState(0);
   const [correoPendiente, setCorreoPendiente] = useState("");
   const [recarga, setRecarga] = useState(0);
+  const [publicaciones, setPublicaciones] = useState<number | null>(null);
 
   // Escucha la sesión: entrar, salir, volver del enlace del correo o del enlace para cambiar la contraseña.
   useEffect(() => {
@@ -157,6 +159,21 @@ export default function Pagina() {
       activo = false;
     };
   }, [token, correoDeSesion, recarga]);
+
+  // Con la cuenta verificada, trae cuántas publicaciones tiene (pérdidas + hallazgos).
+  useEffect(() => {
+    if (!token || fase !== "verificada") return;
+    let activo = true;
+    fetch("/api/mi-actividad", { method: "POST", headers: { Authorization: "Bearer " + token } })
+      .then((r) => r.json())
+      .then((d: { estado: string; perdidas?: number; hallazgos?: number }) => {
+        if (activo && d.estado === "ok") setPublicaciones((d.perdidas ?? 0) + (d.hallazgos ?? 0));
+      })
+      .catch(() => {});
+    return () => {
+      activo = false;
+    };
+  }, [token, fase]);
 
   // Cuenta regresiva del bloqueo o del reenvío.
   useEffect(() => {
@@ -212,7 +229,13 @@ export default function Pagina() {
     const correo = texto(campos, "correo");
     const { error } = await db!.auth.signInWithPassword({ email: correo, password: String(campos.clave ?? "") });
     if (error) {
-      if (error.code === "email_not_confirmed") setCorreoPendiente(correo);
+      if (error.code === "email_not_confirmed") {
+        // Cuenta creada pero sin confirmar: se le reenvía el código y se le pide.
+        setCorreoPendiente(correo);
+        setFase("revisaCorreo");
+        await db!.auth.resend({ type: "signup", email: correo });
+        return setMensaje({ tipo: "info", texto: "Tu correo aún no está confirmado. Te enviamos un código nuevo." });
+      }
       setMensaje({ tipo: "error", texto: mensajeDeAuth(error) });
     }
   }
@@ -229,12 +252,12 @@ export default function Pagina() {
 
     const celular = texto(campos, "celular");
     const distrito = texto(campos, "distrito");
-    const disponible = await consultar("", "disponible", { celular, distrito });
+    const disponible = await consultar("", "disponible", { correo, celular, distrito });
     if (disponible.estado !== "disponible") {
       return setMensaje({ tipo: "error", texto: mensajes[disponible.estado] ?? mensajes.servicio });
     }
 
-    // El celular se guarda en este navegador hasta que vuelva del enlace del correo (vence en 24 h, como el enlace).
+    // El celular se guarda en este navegador hasta que confirme el correo con el código.
     localStorage.setItem(BORRADOR, JSON.stringify({ correo, celular, distrito, vence: Date.now() + 24 * 3600 * 1000 }));
     const { data, error } = await db!.auth.signUp({
       email: correo,
@@ -249,7 +272,13 @@ export default function Pagina() {
       setCorreoPendiente(correo);
       setFase("revisaCorreo");
     }
-    // Si Supabase no pide confirmar el correo, llega la sesión y el efecto de arriba envía el código.
+    // Si Supabase no pide confirmar el correo, llega la sesión y el efecto de arriba completa el registro.
+  }
+
+  /** Confirma el correo con el código de 6 dígitos. Al confirmar llega la sesión y se completa el registro. */
+  async function confirmarCorreo(campos: Record<string, FormDataEntryValue>) {
+    const { error } = await db!.auth.verifyOtp({ email: correoPendiente, token: texto(campos, "codigo"), type: "email" });
+    if (error) setMensaje({ tipo: "error", texto: mensajeDeAuth(error) });
   }
 
   async function reenviarConfirmacion() {
@@ -261,7 +290,7 @@ export default function Pagina() {
     setMensaje(
       error
         ? { tipo: "error", texto: mensajeDeAuth(error) }
-        : { tipo: "info", texto: "Te reenviamos el enlace. Revisa también spam y promociones." },
+        : { tipo: "info", texto: "Te enviamos un código nuevo. Revisa también spam y promociones." },
     );
   }
 
@@ -302,6 +331,7 @@ export default function Pagina() {
     setSesion(null);
     setHasta(0);
     setCorreoPendiente("");
+    setPublicaciones(null);
     cambiarFase("entrar");
   }
 
@@ -310,17 +340,26 @@ export default function Pagina() {
 
   return (
     <section className="mx-auto flex w-full max-w-md flex-col gap-5">
-      <h1 className="text-2xl font-bold">Mi perfil</h1>
+      <h1 className="text-3xl font-bold leading-tight">Mi perfil</h1>
 
       {conSesion && (
-        <div className="flex flex-col gap-3 rounded-2xl border border-borde bg-superficie p-4">
-          <div>
+        <div className="flex items-center gap-4 rounded-2xl border border-borde bg-superficie p-4 shadow-sm">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-turquesa-claro font-titulo text-2xl font-semibold text-turquesa-oscuro">
+            {(sesion!.user.email ?? "?")[0].toUpperCase()}
+          </span>
+          <div className="flex min-w-0 flex-col gap-1">
             <p className="text-sm text-texto-secundario">Sesión iniciada como</p>
-            <p className="font-semibold break-all">{sesion!.user.email}</p>
+            <p className="truncate font-semibold">{sesion!.user.email}</p>
+            {fase === "verificada" ? (
+              <span className="w-fit rounded-full bg-exito-claro px-2.5 py-0.5 text-xs font-semibold text-exito">
+                ✓ Cuenta verificada
+              </span>
+            ) : (
+              <span className="w-fit rounded-full bg-aviso-claro px-2.5 py-0.5 text-xs font-semibold text-aviso">
+                Falta completar el registro
+              </span>
+            )}
           </div>
-          <Boton variante="secundario" anchoCompleto disabled={ocupado} onClick={() => void ejecutar(cerrarSesion)}>
-            Cerrar sesión
-          </Boton>
         </div>
       )}
 
@@ -359,7 +398,8 @@ export default function Pagina() {
       {fase === "crear" && (
         <form className="flex flex-col gap-4" onSubmit={(e) => alEnviar(e, crearCuenta)}>
           <p className="text-texto-secundario">
-            Solo la primera vez confirmamos tu correo y tu celular. Después entrarás con tu correo y contraseña.
+            Solo la primera vez te enviaremos un código a tu correo para confirmarlo. Después entrarás con tu correo y
+            contraseña.
           </p>
           <CampoTexto name="correo" etiqueta="Correo electrónico" type="email" autoComplete="email" required />
           <CampoTexto
@@ -383,18 +423,33 @@ export default function Pagina() {
       )}
 
       {fase === "revisaCorreo" && (
-        <div className="flex flex-col gap-4">
-          <Aviso tipo="info" titulo="Revisa tu correo">
-            Te enviamos un enlace a {correoPendiente}. Ábrelo en este mismo navegador para confirmar tu correo; luego
-            verificaremos tu celular.
-          </Aviso>
+        <form className="flex flex-col gap-4" onSubmit={(e) => alEnviar(e, confirmarCorreo)}>
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-semibold">Revisa tu correo</h2>
+            <p className="text-texto-secundario">
+              Escribe el código de 6 dígitos que enviamos a <span className="font-semibold text-marino">{correoPendiente}</span>.
+              Si no lo ves, busca en spam o promociones.
+            </p>
+          </div>
+          <CampoTexto
+            name="codigo"
+            etiqueta="Código del correo"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="[0-9]{6,10}"
+            maxLength={10}
+            required
+          />
+          <Boton type="submit" anchoCompleto cargando={ocupado}>
+            Confirmar mi correo
+          </Boton>
           <Boton variante="secundario" anchoCompleto disabled={ocupado} onClick={() => void ejecutar(reenviarConfirmacion)}>
-            Reenviar enlace
+            Enviarme otro código
           </Boton>
-          <Boton variante="secundario" anchoCompleto onClick={() => cambiarFase("entrar")}>
-            Ya lo confirmé, quiero entrar
-          </Boton>
-        </div>
+          <button type="button" className="text-sm font-semibold text-turquesa-oscuro" onClick={() => cambiarFase("entrar")}>
+            Volver a entrar
+          </button>
+        </form>
       )}
 
       {fase === "olvido" && (
@@ -435,10 +490,10 @@ export default function Pagina() {
             alEnviar(e, (c) => operar("registrar", { celular: texto(c, "celular"), distrito: texto(c, "distrito") }))
           }
         >
-          <p className="text-texto-secundario">Falta verificar tu celular para publicar o reclamar.</p>
+          <p className="text-texto-secundario">Falta registrar tu celular y distrito para publicar o reclamar.</p>
           <CamposCelularYDistrito />
           <Boton type="submit" anchoCompleto cargando={ocupado}>
-            Enviar código por WhatsApp
+            Continuar
           </Boton>
         </form>
       )}
@@ -465,17 +520,44 @@ export default function Pagina() {
       )}
 
       {fase === "verificada" && (
-        <div className="flex flex-col gap-4">
-          <Aviso tipo="exito" titulo="Cuenta verificada">
-            Tu correo y tu celular están confirmados. Ya puedes publicar y reclamar.
-          </Aviso>
-          <Link href="/perdi" className={estilosBoton("primario", true)}>
-            Perdí algo
-          </Link>
-          <Link href="/encontre" className={estilosBoton("secundario", true)}>
-            Encontré algo
-          </Link>
-        </div>
+        <>
+          <section className="flex flex-col gap-3">
+            <h2 className="text-lg font-semibold">Tu actividad</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-borde bg-superficie p-4">
+                <p className="font-titulo text-3xl font-semibold text-turquesa-oscuro">
+                  {publicaciones === null ? "–" : String(publicaciones).padStart(2, "0")}
+                </p>
+                <p className="text-sm text-texto-secundario">Publicaciones</p>
+              </div>
+              <div className="rounded-2xl border border-borde bg-superficie p-4">
+                <p className="font-titulo text-3xl font-semibold text-borde">–</p>
+                <p className="text-sm text-texto-secundario">Coincidencias · pronto</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="flex flex-col gap-3">
+            <h2 className="text-lg font-semibold">Configuración</h2>
+            {[
+              { titulo: "Datos personales", detalle: "Actualiza tu información" },
+              { titulo: "Notificaciones", detalle: "Gestiona tus avisos" },
+              { titulo: "Privacidad y seguridad", detalle: "Controla tu cuenta" },
+            ].map(({ titulo, detalle }) => (
+              <div
+                key={titulo}
+                aria-disabled="true"
+                className="flex items-center justify-between rounded-2xl border border-borde bg-superficie p-4 opacity-70"
+              >
+                <div>
+                  <p className="font-semibold">{titulo}</p>
+                  <p className="text-sm text-texto-secundario">{detalle} · próximamente</p>
+                </div>
+                <IconoFlecha />
+              </div>
+            ))}
+          </section>
+        </>
       )}
 
       {fase === "suspendida" && <Aviso tipo="error">{mensajes.suspendida}</Aviso>}
@@ -483,6 +565,17 @@ export default function Pagina() {
         <Boton variante="secundario" anchoCompleto onClick={() => setRecarga((n) => n + 1)}>
           Reintentar
         </Boton>
+      )}
+
+      {conSesion && (
+        <Boton variante="secundario" anchoCompleto disabled={ocupado} onClick={() => void ejecutar(cerrarSesion)}>
+          Cerrar sesión
+        </Boton>
+      )}
+      {(fase === "entrar" || fase === "crear") && (
+        <p className="flex items-center justify-center gap-2 text-sm text-texto-secundario">
+          <IconoEscudo /> Tus datos se mantienen protegidos.
+        </p>
       )}
     </section>
   );

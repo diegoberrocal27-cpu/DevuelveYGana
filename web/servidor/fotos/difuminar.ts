@@ -18,3 +18,22 @@ export async function difuminarFoto(original: Uint8Array): Promise<Uint8Array> {
     .jpeg({ quality: calidad, mozjpeg: true })
     .toBuffer();
 }
+
+// Copia pública de los objetos que no son documentos: nítida, pero reducida y sin metadatos.
+export const PARAMETROS_COPIA_PUBLICA = { ancho: 640, calidad: 75 };
+
+/**
+ * Copia que verá el público en el catálogo.
+ * - DNI: difuminada (SP-03), porque lleva nombre, número y rostro.
+ * - Celular, laptop y cartera: nítida, reducida a 640 px y sin metadatos (ubicación GPS, modelo del celular).
+ *   La prueba de que el objeto es de alguien son los rasgos ocultos, no la foto.
+ */
+export async function prepararCopiaPublica(original: Uint8Array, categoria: string): Promise<Uint8Array> {
+  if (categoria === "dni") return difuminarFoto(original);
+  const { ancho, calidad } = PARAMETROS_COPIA_PUBLICA;
+  return sharp(original, { limitInputPixels: PIXELES_MAXIMOS })
+    .rotate()
+    .resize({ width: ancho, height: ancho, fit: "inside", withoutEnlargement: true })
+    .jpeg({ quality: calidad, mozjpeg: true })
+    .toBuffer();
+}

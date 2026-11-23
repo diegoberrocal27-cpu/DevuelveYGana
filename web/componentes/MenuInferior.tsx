@@ -6,9 +6,9 @@ import { IconoEncontre, IconoInicio, IconoPerdi, IconoPerfil } from "./iconos";
 
 const OPCIONES = [
   { ruta: "/", texto: "Inicio", Icono: IconoInicio },
-  { ruta: "/perdi", texto: "Perdí algo", Icono: IconoPerdi },
-  { ruta: "/encontre", texto: "Encontré algo", Icono: IconoEncontre },
-  { ruta: "/perfil", texto: "Mi perfil", Icono: IconoPerfil },
+  { ruta: "/perdi", texto: "Perdí", Icono: IconoPerdi },
+  { ruta: "/encontre", texto: "Hallé", Icono: IconoEncontre },
+  { ruta: "/perfil", texto: "Perfil", Icono: IconoPerfil },
 ];
 
 export function estaActiva(rutaActual: string, ruta: string): boolean {

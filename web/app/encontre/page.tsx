@@ -5,16 +5,10 @@ export const metadata: Metadata = {
   title: "Encontré algo · DevuelveyGana",
 };
 
-/** HU-03: publicar un objeto encontrado. */
+/** HU-03: publicar un objeto encontrado, en 3 pasos. */
 export default function PaginaEncontre() {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold">Encontré algo</h1>
-        <p className="text-texto-secundario">
-          Publícalo gratis. Buscaremos al dueño sin mostrar tus datos ni la foto al público.
-        </p>
-      </div>
+    <div className="flex flex-col gap-5 py-2">
       <PantallaEncontre />
     </div>
   );

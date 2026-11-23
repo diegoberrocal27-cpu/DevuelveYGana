@@ -54,6 +54,8 @@ export async function POST(request: Request) {
     }
     const resultado = await operar(datos.accion);
     if (resultado.estado !== "enviar") return Response.json(resultado);
+    // Piloto sin WhatsApp: el correo ya se confirmó con el código de Supabase, así que la cuenta queda verificada.
+    if (process.env.VERIFICACION_WHATSAPP === "desactivada") return Response.json(await operar("verificar"));
     // Solo en desarrollo y sin Twilio configurado: el código se muestra en la terminal del servidor.
     if (process.env.NODE_ENV !== "production" && !process.env.TWILIO_ACCOUNT_SID) {
       console.info(`[registro] Código para ${resultado.destino}: ${codigo} (modo desarrollo, sin WhatsApp)`);

@@ -2,6 +2,7 @@
 
 import { useState, type InputHTMLAttributes, type Ref } from "react";
 import { estiloAyuda, estiloError, estiloEtiqueta } from "./estilosCampo";
+import { IconoCamara } from "./iconosCategoria";
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "accept"> & {
   name: string;
@@ -9,12 +10,25 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "accept"> & {
   error?: string;
   ayuda?: string;
   ref?: Ref<HTMLInputElement>;
+  /** Nombre del archivo ya elegido (por ejemplo, al volver a este paso). */
+  archivoElegido?: string;
 };
 
 /** Campo para elegir una foto (cámara o galería) y ver el nombre del archivo elegido. */
-export default function CampoFoto({ name, id, etiqueta, error, ayuda, required, onChange, ref, ...resto }: Props) {
+export default function CampoFoto({
+  name,
+  id,
+  etiqueta,
+  error,
+  ayuda,
+  required,
+  onChange,
+  ref,
+  archivoElegido = "",
+  ...resto
+}: Props) {
   const idCampo = id ?? name;
-  const [nombre, setNombre] = useState("");
+  const [nombre, setNombre] = useState(archivoElegido);
   const idAyuda = ayuda ? `${idCampo}-ayuda` : undefined;
   const idError = error ? `${idCampo}-error` : undefined;
 
@@ -26,12 +40,15 @@ export default function CampoFoto({ name, id, etiqueta, error, ayuda, required, 
       </span>
       <label
         htmlFor={idCampo}
-        className={`flex min-h-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed bg-superficie p-4 text-center text-sm ${
+        className={`flex min-h-32 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed bg-turquesa-claro/40 p-4 text-center text-sm ${
           error ? "border-error" : "border-borde hover:border-turquesa"
         }`}
       >
+        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-turquesa-claro text-turquesa-oscuro">
+          <IconoCamara />
+        </span>
         <span className="font-semibold text-turquesa-oscuro">{nombre ? "Cambiar foto" : "Tomar o elegir una foto"}</span>
-        <span className="text-texto-secundario">{nombre || "JPG, PNG o WebP"}</span>
+        <span className="max-w-full truncate text-texto-secundario">{nombre || "JPG, PNG o WebP"}</span>
       </label>
       <input
         ref={ref}

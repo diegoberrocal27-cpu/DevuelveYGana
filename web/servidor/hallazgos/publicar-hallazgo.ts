@@ -63,7 +63,7 @@ export function crearPublicarHallazgo({
     // 1. Difuminar antes de guardar nada: si el archivo no es una imagen, no queda ningún rastro.
     let copia: Uint8Array;
     try {
-      copia = await difuminar(foto.contenido);
+      copia = await difuminar(foto.contenido, datos.categoria);
     } catch {
       return { ok: false, errores: { foto: "No pudimos leer la foto. Prueba con otra imagen (JPG, PNG o WebP)." } };
     }
