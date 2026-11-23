@@ -1,0 +1,392 @@
+[
+  {
+    "id": "celular-01",
+    "etiqueta": "correcto",
+    "categoria": "celular",
+    "perdida": {
+      "marca": "Samsung", "color": "negro", "distrito": "Ayacucho", "fecha": "2026-11-03",
+      "descripcion": "Se me cayó mi Samsung negro en un mototaxi. Tiene el vidrio protector rajado en una esquina y una funda transparente."
+    },
+    "hallazgo": {
+      "marca": "Samsung", "color": "negro", "distrito": "San Juan Bautista", "fecha": "2026-11-04",
+      "descripcion": "Encontré un celular Samsung de color negro sobre el asiento de un mototaxi. El protector de pantalla está roto en una punta y lleva funda transparente."
+    }
+  },
+  {
+    "id": "celular-02",
+    "etiqueta": "correcto",
+    "categoria": "celular",
+    "perdida": {
+      "marca": "Xiaomi", "color": "azul", "distrito": "San Juan Bautista", "fecha": "2026-11-05",
+      "descripcion": "Perdí mi Xiaomi azul en la feria del domingo. Tiene funda de silicona azul oscuro con un anillo para el dedo."
+    },
+    "hallazgo": {
+      "marca": "Xiaomi", "color": "azul", "distrito": "Jesús Nazareno", "fecha": "2026-11-07",
+      "descripcion": "Hallé un teléfono Xiaomi azul con funda de goma oscura y un aro metálico atrás. Estaba encima de un puesto de la feria."
+    }
+  },
+  {
+    "id": "celular-03",
+    "etiqueta": "correcto",
+    "categoria": "celular",
+    "perdida": {
+      "marca": "Apple", "color": "blanco", "distrito": "Ayacucho", "fecha": "2026-11-10",
+      "descripcion": "iPhone blanco con la tapa trasera rayada y una calcomanía pequeña de una flor. Lo olvidé en una banca de la plaza."
+    },
+    "hallazgo": {
+      "marca": "Apple", "color": "blanco", "distrito": "Ayacucho", "fecha": "2026-11-10",
+      "descripcion": "Celular iPhone de color blanco, la parte de atrás está rayada y tiene un adhesivo de flor. Lo encontró un vendedor de la plaza."
+    }
+  },
+  {
+    "id": "celular-04",
+    "etiqueta": "correcto",
+    "categoria": "celular",
+    "perdida": {
+      "marca": "Motorola", "color": "verde", "distrito": "Carmen Alto", "fecha": "2026-10-28",
+      "descripcion": "Dejé mi Motorola verde en una combi de la ruta a Carmen Alto. La pantalla tiene una línea fina en el borde derecho."
+    },
+    "hallazgo": {
+      "marca": "Motorola", "color": "verde", "distrito": "Ayacucho", "fecha": "2026-10-29",
+      "descripcion": "El chofer de una combi entregó un teléfono Motorola verde que halló debajo de un asiento. Se ve una línea en el borde de la pantalla."
+    }
+  },
+  {
+    "id": "celular-05",
+    "etiqueta": "incorrecto",
+    "categoria": "celular",
+    "perdida": {
+      "marca": "Samsung", "color": "negro", "distrito": "Ayacucho", "fecha": "2026-11-12",
+      "descripcion": "Perdí mi Samsung negro con funda transparente en la universidad, cerca de la biblioteca."
+    },
+    "hallazgo": {
+      "marca": "Samsung", "color": "blanco", "distrito": "Ayacucho", "fecha": "2026-11-12",
+      "descripcion": "Encontré un Samsung blanco con funda transparente en la biblioteca de la universidad."
+    }
+  },
+  {
+    "id": "celular-06",
+    "etiqueta": "incorrecto",
+    "categoria": "celular",
+    "perdida": {
+      "marca": "Xiaomi", "color": "azul", "distrito": "San Juan Bautista", "fecha": "2026-11-14",
+      "descripcion": "Se me perdió un Xiaomi azul con funda oscura en el mercado de San Juan Bautista."
+    },
+    "hallazgo": {
+      "marca": "Xiaomi", "color": "azul", "distrito": "Huanta", "fecha": "2026-11-15",
+      "descripcion": "Hallé un Xiaomi azul con funda oscura en la terminal de buses de Huanta."
+    }
+  },
+  {
+    "id": "celular-07",
+    "etiqueta": "incorrecto",
+    "categoria": "celular",
+    "perdida": {
+      "marca": "Apple", "color": "blanco", "distrito": "Jesús Nazareno", "fecha": "2026-11-16",
+      "descripcion": "iPhone blanco con la pantalla intacta, sin funda. Lo perdí caminando por el parque de Jesús Nazareno."
+    },
+    "hallazgo": {
+      "marca": "Samsung", "color": "blanco", "distrito": "Jesús Nazareno", "fecha": "2026-11-16",
+      "descripcion": "Encontré un celular Samsung blanco sin funda en el parque de Jesús Nazareno."
+    }
+  },
+  {
+    "id": "celular-08",
+    "etiqueta": "incorrecto",
+    "categoria": "celular",
+    "perdida": {
+      "marca": "Huawei", "color": "rojo", "distrito": "San Juan Bautista", "fecha": "2026-11-18",
+      "descripcion": "Huawei rojo con una grieta en la esquina inferior. Se me cayó al bajar de un taxi."
+    },
+    "hallazgo": {
+      "marca": "Huawei", "color": "negro", "distrito": "Vilcashuamán", "fecha": "2026-11-19",
+      "descripcion": "Teléfono Huawei negro con una grieta en una esquina, encontrado en la plaza de Vilcashuamán."
+    }
+  },
+  {
+    "id": "laptop-01",
+    "etiqueta": "correcto",
+    "categoria": "laptop",
+    "perdida": {
+      "marca": "HP", "color": "gris", "distrito": "Ayacucho", "fecha": "2026-11-02",
+      "descripcion": "Laptop HP gris de 15 pulgadas con una calcomanía de la escuela de ingeniería en la tapa. Quedó en una mesa del comedor."
+    },
+    "hallazgo": {
+      "marca": "HP", "color": "gris", "distrito": "Ayacucho", "fecha": "2026-11-03",
+      "descripcion": "Computadora portátil HP color gris, mediana, con un sticker de ingeniería pegado arriba. La dejaron en el comedor universitario."
+    }
+  },
+  {
+    "id": "laptop-02",
+    "etiqueta": "correcto",
+    "categoria": "laptop",
+    "perdida": {
+      "marca": "Lenovo", "color": "negro", "distrito": "San Juan Bautista", "fecha": "2026-11-06",
+      "descripcion": "Lenovo negra dentro de una mochila celeste que dejé en una cabina de internet. Tiene el cargador original enrollado."
+    },
+    "hallazgo": {
+      "marca": "Lenovo", "color": "negro", "distrito": "Ayacucho", "fecha": "2026-11-08",
+      "descripcion": "En una cabina de internet encontraron una laptop Lenovo negra, guardada en una mochila de color claro junto a su cargador."
+    }
+  },
+  {
+    "id": "laptop-03",
+    "etiqueta": "correcto",
+    "categoria": "laptop",
+    "perdida": {
+      "marca": "Dell", "color": "plateado", "distrito": "Jesús Nazareno", "fecha": "2026-11-09",
+      "descripcion": "Perdí una Dell plateada con la esquina izquierda abollada. Se me quedó en el asiento de una combi."
+    },
+    "hallazgo": {
+      "marca": "Dell", "color": "plateado", "distrito": "San Juan Bautista", "fecha": "2026-11-10",
+      "descripcion": "Un pasajero halló una laptop Dell de color plata con una esquina golpeada, olvidada en una combi."
+    }
+  },
+  {
+    "id": "laptop-04",
+    "etiqueta": "correcto",
+    "categoria": "laptop",
+    "perdida": {
+      "marca": "Asus", "color": "azul", "distrito": "Carmen Alto", "fecha": "2026-11-11",
+      "descripcion": "Laptop Asus azul oscuro, con una funda de tela gris. La olvidé en la sala de espera de un consultorio."
+    },
+    "hallazgo": {
+      "marca": "Asus", "color": "azul", "distrito": "Ayacucho", "fecha": "2026-11-12",
+      "descripcion": "Computadora Asus de color azul oscuro dentro de una funda gris de tela, dejada en una sala de espera."
+    }
+  },
+  {
+    "id": "laptop-05",
+    "etiqueta": "incorrecto",
+    "categoria": "laptop",
+    "perdida": {
+      "marca": "HP", "color": "gris", "distrito": "Ayacucho", "fecha": "2026-11-13",
+      "descripcion": "HP gris con un sticker de ingeniería en la tapa. La perdí en el comedor universitario."
+    },
+    "hallazgo": {
+      "marca": "HP", "color": "negro", "distrito": "Ayacucho", "fecha": "2026-11-13",
+      "descripcion": "Laptop HP negra con un sticker de ingeniería, encontrada en el comedor universitario."
+    }
+  },
+  {
+    "id": "laptop-06",
+    "etiqueta": "incorrecto",
+    "categoria": "laptop",
+    "perdida": {
+      "marca": "Lenovo", "color": "negro", "distrito": "San Juan Bautista", "fecha": "2026-11-15",
+      "descripcion": "Lenovo negra con una mochila celeste, perdida en una cabina de internet."
+    },
+    "hallazgo": {
+      "marca": "Lenovo", "color": "negro", "distrito": "Huanta", "fecha": "2026-11-16",
+      "descripcion": "Laptop Lenovo negra con una mochila celeste, hallada en una cabina de internet de Huanta."
+    }
+  },
+  {
+    "id": "laptop-07",
+    "etiqueta": "incorrecto",
+    "categoria": "laptop",
+    "perdida": {
+      "marca": "Dell", "color": "plateado", "distrito": "Jesús Nazareno", "fecha": "2026-11-17",
+      "descripcion": "Dell plateada con la esquina abollada, olvidada en una combi."
+    },
+    "hallazgo": {
+      "marca": "Acer", "color": "plateado", "distrito": "Jesús Nazareno", "fecha": "2026-11-17",
+      "descripcion": "Laptop Acer plateada con una esquina golpeada, encontrada en una combi."
+    }
+  },
+  {
+    "id": "laptop-08",
+    "etiqueta": "incorrecto",
+    "categoria": "laptop",
+    "perdida": {
+      "marca": "Asus", "color": "azul", "distrito": "Carmen Alto", "fecha": "2026-11-19",
+      "descripcion": "Asus azul con funda de tela gris, dejada en un consultorio."
+    },
+    "hallazgo": {
+      "marca": "Asus", "color": "rojo", "distrito": "Quinua", "fecha": "2026-11-20",
+      "descripcion": "Laptop Asus roja con funda gris de tela, hallada en una tienda de Quinua."
+    }
+  },
+  {
+    "id": "cartera-01",
+    "etiqueta": "correcto",
+    "categoria": "cartera",
+    "perdida": {
+      "marca": null, "color": "marrón", "distrito": "Ayacucho", "fecha": "2026-11-01",
+      "descripcion": "Cartera de cuero marrón sin marca visible, con cierre dorado y una correa larga. Estaba en un taxi."
+    },
+    "hallazgo": {
+      "marca": null, "color": "marrón", "distrito": "San Juan Bautista", "fecha": "2026-11-02",
+      "descripcion": "Encontré en un taxi una cartera marrón de cuero, con cierre dorado y correa larga. No tiene marca."
+    }
+  },
+  {
+    "id": "cartera-02",
+    "etiqueta": "correcto",
+    "categoria": "cartera",
+    "perdida": {
+      "marca": null, "color": "negro", "distrito": "San Juan Bautista", "fecha": "2026-11-04",
+      "descripcion": "Billetera negra sin marca, de tela gruesa, con un llavero de pompón rosado colgado. La perdí en el mercado."
+    },
+    "hallazgo": {
+      "marca": null, "color": "negro", "distrito": "San Juan Bautista", "fecha": "2026-11-06",
+      "descripcion": "Hallé una billetera negra de tela con un pompón rosado atado al cierre, junto a un puesto del mercado."
+    }
+  },
+  {
+    "id": "cartera-03",
+    "etiqueta": "correcto",
+    "categoria": "cartera",
+    "perdida": {
+      "marca": "Vizzano", "color": "rojo", "distrito": "Jesús Nazareno", "fecha": "2026-11-08",
+      "descripcion": "Cartera Vizzano roja de mano, con una mancha pequeña de tinta en el forro. La dejé en el banco de un parque."
+    },
+    "hallazgo": {
+      "marca": "Vizzano", "color": "rojo", "distrito": "Ayacucho", "fecha": "2026-11-09",
+      "descripcion": "Cartera de mano roja de la marca Vizzano, con una mancha azul por dentro, encontrada sobre una banca."
+    }
+  },
+  {
+    "id": "cartera-04",
+    "etiqueta": "correcto",
+    "categoria": "cartera",
+    "perdida": {
+      "marca": "Vizzano", "color": "negro", "distrito": "Ayacucho", "fecha": "2026-11-11",
+      "descripcion": "Bolso negro Vizzano mediano con una cadena en la correa. Se me quedó en una tienda del centro."
+    },
+    "hallazgo": {
+      "marca": null, "color": "negro", "distrito": "Ayacucho", "fecha": "2026-11-12",
+      "descripcion": "Una tienda del centro guarda un bolso negro mediano con correa de cadena. No se ve la marca por fuera."
+    }
+  },
+  {
+    "id": "cartera-05",
+    "etiqueta": "incorrecto",
+    "categoria": "cartera",
+    "perdida": {
+      "marca": null, "color": "marrón", "distrito": "Ayacucho", "fecha": "2026-11-13",
+      "descripcion": "Cartera de cuero marrón sin marca con cierre dorado, perdida en un taxi."
+    },
+    "hallazgo": {
+      "marca": null, "color": "negro", "distrito": "Ayacucho", "fecha": "2026-11-13",
+      "descripcion": "Cartera negra de cuero sin marca con cierre dorado, encontrada en un taxi."
+    }
+  },
+  {
+    "id": "cartera-06",
+    "etiqueta": "incorrecto",
+    "categoria": "cartera",
+    "perdida": {
+      "marca": null, "color": "negro", "distrito": "San Juan Bautista", "fecha": "2026-11-15",
+      "descripcion": "Billetera negra de tela sin marca con un pompón rosado, perdida en el mercado."
+    },
+    "hallazgo": {
+      "marca": null, "color": "negro", "distrito": "Huanta", "fecha": "2026-11-16",
+      "descripcion": "Billetera negra de tela con un pompón rosado, hallada en el mercado de Huanta."
+    }
+  },
+  {
+    "id": "cartera-07",
+    "etiqueta": "incorrecto",
+    "categoria": "cartera",
+    "perdida": {
+      "marca": "Vizzano", "color": "rojo", "distrito": "Jesús Nazareno", "fecha": "2026-11-17",
+      "descripcion": "Cartera de mano roja Vizzano con una mancha de tinta dentro, dejada en un parque."
+    },
+    "hallazgo": {
+      "marca": "Ferrato", "color": "rojo", "distrito": "Jesús Nazareno", "fecha": "2026-11-17",
+      "descripcion": "Cartera de mano roja marca Ferrato con una mancha de tinta adentro, hallada en un parque."
+    }
+  },
+  {
+    "id": "cartera-08",
+    "etiqueta": "incorrecto",
+    "categoria": "cartera",
+    "perdida": {
+      "marca": "Ferrato", "color": "beige", "distrito": "Ayacucho", "fecha": "2026-11-19",
+      "descripcion": "Cartera beige Ferrato con asa corta y un llavero de metal. Se quedó en un restaurante."
+    },
+    "hallazgo": {
+      "marca": "Vizzano", "color": "beige", "distrito": "Ayacucho", "fecha": "2026-11-19",
+      "descripcion": "Cartera beige de la marca Vizzano con asa corta y un llavero metálico, olvidada en un restaurante."
+    }
+  },
+  {
+    "id": "dni-01",
+    "etiqueta": "correcto",
+    "categoria": "dni",
+    "perdida": {
+      "marca": null, "color": "transparente", "distrito": "Ayacucho", "fecha": "2026-11-03",
+      "descripcion": "Perdí mi DNI dentro de una funda de plástico transparente con una foto carné pequeña detrás. Se cayó en la fila de un banco."
+    },
+    "hallazgo": {
+      "marca": null, "color": "transparente", "distrito": "Ayacucho", "fecha": "2026-11-04",
+      "descripcion": "Encontré un DNI en una funda transparente que lleva una foto carné pegada atrás, en el piso de un banco."
+    }
+  },
+  {
+    "id": "dni-02",
+    "etiqueta": "correcto",
+    "categoria": "dni",
+    "perdida": {
+      "marca": null, "color": "negro", "distrito": "San Juan Bautista", "fecha": "2026-11-07",
+      "descripcion": "DNI guardado en un portadocumentos negro de cuero sintético, junto con una tarjeta de biblioteca. Lo perdí en una combi."
+    },
+    "hallazgo": {
+      "marca": null, "color": "negro", "distrito": "Jesús Nazareno", "fecha": "2026-11-09",
+      "descripcion": "En una combi apareció un portadocumentos negro con un DNI y un carné de biblioteca."
+    }
+  },
+  {
+    "id": "dni-03",
+    "etiqueta": "correcto",
+    "categoria": "dni",
+    "perdida": {
+      "marca": null, "color": "rojo", "distrito": "Jesús Nazareno", "fecha": "2026-11-12",
+      "descripcion": "Mi DNI estaba en una funda roja de goma con un pequeño corte en una esquina. Se me cayó cerca del colegio."
+    },
+    "hallazgo": {
+      "marca": null, "color": "rojo", "distrito": "San Juan Bautista", "fecha": "2026-11-13",
+      "descripcion": "Hallé un DNI dentro de una funda de goma roja con una esquina cortada, cerca de un colegio."
+    }
+  },
+  {
+    "id": "dni-04",
+    "etiqueta": "incorrecto",
+    "categoria": "dni",
+    "perdida": {
+      "marca": null, "color": "negro", "distrito": "Ayacucho", "fecha": "2026-11-14",
+      "descripcion": "DNI en un portadocumentos negro, perdido en el mercado central."
+    },
+    "hallazgo": {
+      "marca": null, "color": "negro", "distrito": "Huanta", "fecha": "2026-11-15",
+      "descripcion": "DNI dentro de un portadocumentos negro, encontrado en una tienda de Huanta."
+    }
+  },
+  {
+    "id": "dni-05",
+    "etiqueta": "incorrecto",
+    "categoria": "dni",
+    "perdida": {
+      "marca": null, "color": "rojo", "distrito": "Jesús Nazareno", "fecha": "2026-11-17",
+      "descripcion": "DNI con funda roja de goma, perdido en el parque de Jesús Nazareno."
+    },
+    "hallazgo": {
+      "marca": null, "color": "azul", "distrito": "Jesús Nazareno", "fecha": "2026-11-17",
+      "descripcion": "DNI con funda azul de goma, encontrado en el parque de Jesús Nazareno."
+    }
+  },
+  {
+    "id": "dni-06",
+    "etiqueta": "incorrecto",
+    "categoria": "dni",
+    "perdida": {
+      "marca": null, "color": "transparente", "distrito": "San Juan Bautista", "fecha": "2026-11-18",
+      "descripcion": "DNI en una funda transparente con una foto carné atrás, perdido en una combi."
+    },
+    "hallazgo": {
+      "marca": null, "color": "negro", "distrito": "Vilcashuamán", "fecha": "2026-11-19",
+      "descripcion": "DNI en un portadocumentos negro, hallado en la plaza de Vilcashuamán."
+    }
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "vecinos": [
+    ["Ayacucho", "San Juan Bautista"],
+    ["Ayacucho", "Jesús Nazareno"],
+    ["Ayacucho", "Carmen Alto"],
+    ["San Juan Bautista", "Jesús Nazareno"],
+    ["San Juan Bautista", "Carmen Alto"]
+  ]
+}
