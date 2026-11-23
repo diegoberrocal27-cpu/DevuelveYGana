@@ -105,12 +105,18 @@ export default function FormularioHallazgo() {
     <form noValidate onSubmit={enviar} className="flex flex-col gap-4">
       {mensaje && <Aviso tipo="error">{mensaje}</Aviso>}
 
-      <SelectorCategoria value={valores.categoria} onChange={cambiar} error={errores.categoria} required />
+      <SelectorCategoria
+        etiqueta="¿Qué objeto encontraste?"
+        value={valores.categoria}
+        onChange={cambiar}
+        error={errores.categoria}
+        required
+      />
       <AreaTexto
         name="descripcion"
-        etiqueta="Descripción corta"
-        placeholder="Ejemplo: celular negro con funda azul"
-        ayuda="No escribas números de documentos, tarjetas ni datos personales."
+        etiqueta="Descríbelo brevemente"
+        placeholder="Ej.: celular negro con funda azul"
+        ayuda="Evita incluir datos personales, números de documentos o tarjetas."
         maxLength={200}
         rows={3}
         value={valores.descripcion}
@@ -121,7 +127,7 @@ export default function FormularioHallazgo() {
       <CampoTexto
         name="dia"
         type="date"
-        etiqueta="Día en que lo encontraste"
+        etiqueta="¿Qué día lo encontraste?"
         max={hoy()}
         value={valores.dia}
         onChange={cambiar}
@@ -129,7 +135,7 @@ export default function FormularioHallazgo() {
         required
       />
       <SelectorDistrito
-        etiqueta="Distrito donde lo encontraste"
+        etiqueta="¿En qué distrito?"
         value={valores.distrito}
         onChange={cambiar}
         error={errores.distrito}
@@ -160,7 +166,7 @@ export default function FormularioHallazgo() {
       <Boton type="submit" anchoCompleto cargando={ocupado}>
         {paso === "preparando" ? "Preparando la foto…" : paso === "publicando" ? "Publicando…" : "Publicar hallazgo"}
       </Boton>
-      <p className="text-center text-sm text-texto-secundario">Publicar es gratis y sin límite.</p>
+      <p className="text-center text-sm text-texto-secundario">Gratis y sin límite · Custodia segura hasta la entrega.</p>
     </form>
   );
 }

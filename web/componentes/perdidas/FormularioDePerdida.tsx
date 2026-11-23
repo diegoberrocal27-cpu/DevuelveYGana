@@ -101,11 +101,12 @@ export default function FormularioDePerdida() {
   return (
     <form noValidate onSubmit={enviar(registrar)} className="flex flex-col gap-4">
       {mensaje && <Aviso tipo="error">{mensaje}</Aviso>}
-      <SelectorCategoria value={valores.categoria} onChange={alCambiar} error={errores.categoria} required />
+      <SelectorCategoria etiqueta="¿Qué objeto perdiste?" value={valores.categoria} onChange={alCambiar} error={errores.categoria} required />
       <AreaTexto
         name="descripcion"
-        etiqueta="Descripción"
-        placeholder="Ejemplo: celular negro con funda azul"
+        etiqueta="Descríbelo con detalle"
+        placeholder="Ej.: celular negro con funda azul"
+        ayuda="Incluye color, marca o alguna señal."
         value={valores.descripcion}
         onChange={cambiar}
         error={errores.descripcion}
@@ -115,13 +116,13 @@ export default function FormularioDePerdida() {
         name="fecha"
         type="date"
         max={hoy()}
-        etiqueta="Día en que lo perdiste"
+        etiqueta="¿Cuándo lo perdiste?"
         value={valores.fecha}
         onChange={cambiar}
         error={errores.fecha}
         required
       />
-      <SelectorDistrito etiqueta="Distrito donde lo perdiste" value={valores.distrito} onChange={cambiar} error={errores.distrito} required />
+      <SelectorDistrito etiqueta="¿Dónde lo perdiste?" value={valores.distrito} onChange={cambiar} error={errores.distrito} required />
 
       {rasgos.length > 0 && (
         <fieldset className="flex flex-col gap-4 rounded-2xl border border-borde bg-superficie p-4">
@@ -150,6 +151,7 @@ export default function FormularioDePerdida() {
       <Boton type="submit" anchoCompleto cargando={enviando}>
         Registrar pérdida
       </Boton>
+      <p className="text-center text-sm text-texto-secundario">Tus datos se mantienen protegidos.</p>
     </form>
   );
 }

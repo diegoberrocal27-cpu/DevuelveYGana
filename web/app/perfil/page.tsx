@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import Aviso, { type TipoAviso } from "@/componentes/Aviso";
-import Boton, { estilosBoton } from "@/componentes/Boton";
+import Boton from "@/componentes/Boton";
 import CampoTexto from "@/componentes/CampoTexto";
+import { IconoEscudo, IconoFlecha } from "@/componentes/iconosCategoria";
 import Selector from "@/componentes/Selector";
 import { DISTRITOS } from "@/lib/catalogos";
 import { clienteDelNavegador } from "@/lib/supabase-navegador";
@@ -111,6 +111,7 @@ export default function Pagina() {
   const [ahora, setAhora] = useState(0);
   const [correoPendiente, setCorreoPendiente] = useState("");
   const [recarga, setRecarga] = useState(0);
+  const [publicaciones, setPublicaciones] = useState<number | null>(null);
 
   // Escucha la sesión: entrar, salir, volver del enlace del correo o del enlace para cambiar la contraseña.
   useEffect(() => {
@@ -157,6 +158,21 @@ export default function Pagina() {
       activo = false;
     };
   }, [token, correoDeSesion, recarga]);
+
+  // Con la cuenta verificada, trae cuántas publicaciones tiene (pérdidas + hallazgos).
+  useEffect(() => {
+    if (!token || fase !== "verificada") return;
+    let activo = true;
+    fetch("/api/mi-actividad", { method: "POST", headers: { Authorization: "Bearer " + token } })
+      .then((r) => r.json())
+      .then((d: { estado: string; perdidas?: number; hallazgos?: number }) => {
+        if (activo && d.estado === "ok") setPublicaciones((d.perdidas ?? 0) + (d.hallazgos ?? 0));
+      })
+      .catch(() => {});
+    return () => {
+      activo = false;
+    };
+  }, [token, fase]);
 
   // Cuenta regresiva del bloqueo o del reenvío.
   useEffect(() => {
@@ -302,6 +318,7 @@ export default function Pagina() {
     setSesion(null);
     setHasta(0);
     setCorreoPendiente("");
+    setPublicaciones(null);
     cambiarFase("entrar");
   }
 
@@ -310,17 +327,29 @@ export default function Pagina() {
 
   return (
     <section className="mx-auto flex w-full max-w-md flex-col gap-5">
-      <h1 className="text-2xl font-bold">Mi perfil</h1>
+      <div className="flex flex-col gap-1">
+        <p className="text-sm font-semibold text-turquesa-oscuro">Tu espacio</p>
+        <h1 className="text-3xl font-bold leading-tight">Mi perfil</h1>
+      </div>
 
       {conSesion && (
-        <div className="flex flex-col gap-3 rounded-2xl border border-borde bg-superficie p-4">
-          <div>
+        <div className="flex items-center gap-4 rounded-2xl border border-borde bg-superficie p-4 shadow-sm">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-turquesa-claro font-titulo text-2xl font-semibold text-turquesa-oscuro">
+            {(sesion!.user.email ?? "?")[0].toUpperCase()}
+          </span>
+          <div className="flex min-w-0 flex-col gap-1">
             <p className="text-sm text-texto-secundario">Sesión iniciada como</p>
-            <p className="font-semibold break-all">{sesion!.user.email}</p>
+            <p className="truncate font-semibold">{sesion!.user.email}</p>
+            {fase === "verificada" ? (
+              <span className="w-fit rounded-full bg-exito-claro px-2.5 py-0.5 text-xs font-semibold text-exito">
+                ✓ Cuenta verificada
+              </span>
+            ) : (
+              <span className="w-fit rounded-full bg-aviso-claro px-2.5 py-0.5 text-xs font-semibold text-aviso">
+                Falta verificar el celular
+              </span>
+            )}
           </div>
-          <Boton variante="secundario" anchoCompleto disabled={ocupado} onClick={() => void ejecutar(cerrarSesion)}>
-            Cerrar sesión
-          </Boton>
         </div>
       )}
 
@@ -465,17 +494,44 @@ export default function Pagina() {
       )}
 
       {fase === "verificada" && (
-        <div className="flex flex-col gap-4">
-          <Aviso tipo="exito" titulo="Cuenta verificada">
-            Tu correo y tu celular están confirmados. Ya puedes publicar y reclamar.
-          </Aviso>
-          <Link href="/perdi" className={estilosBoton("primario", true)}>
-            Perdí algo
-          </Link>
-          <Link href="/encontre" className={estilosBoton("secundario", true)}>
-            Encontré algo
-          </Link>
-        </div>
+        <>
+          <section className="flex flex-col gap-3">
+            <h2 className="text-lg font-semibold">Tu actividad</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-borde bg-superficie p-4">
+                <p className="font-titulo text-3xl font-semibold text-turquesa-oscuro">
+                  {publicaciones === null ? "–" : String(publicaciones).padStart(2, "0")}
+                </p>
+                <p className="text-sm text-texto-secundario">Publicaciones</p>
+              </div>
+              <div className="rounded-2xl border border-borde bg-superficie p-4">
+                <p className="font-titulo text-3xl font-semibold text-borde">–</p>
+                <p className="text-sm text-texto-secundario">Coincidencias · pronto</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="flex flex-col gap-3">
+            <h2 className="text-lg font-semibold">Configuración</h2>
+            {[
+              { titulo: "Datos personales", detalle: "Actualiza tu información" },
+              { titulo: "Notificaciones", detalle: "Gestiona tus avisos" },
+              { titulo: "Privacidad y seguridad", detalle: "Controla tu cuenta" },
+            ].map(({ titulo, detalle }) => (
+              <div
+                key={titulo}
+                aria-disabled="true"
+                className="flex items-center justify-between rounded-2xl border border-borde bg-superficie p-4 opacity-70"
+              >
+                <div>
+                  <p className="font-semibold">{titulo}</p>
+                  <p className="text-sm text-texto-secundario">{detalle} · próximamente</p>
+                </div>
+                <IconoFlecha />
+              </div>
+            ))}
+          </section>
+        </>
       )}
 
       {fase === "suspendida" && <Aviso tipo="error">{mensajes.suspendida}</Aviso>}
@@ -483,6 +539,17 @@ export default function Pagina() {
         <Boton variante="secundario" anchoCompleto onClick={() => setRecarga((n) => n + 1)}>
           Reintentar
         </Boton>
+      )}
+
+      {conSesion && (
+        <Boton variante="secundario" anchoCompleto disabled={ocupado} onClick={() => void ejecutar(cerrarSesion)}>
+          Cerrar sesión
+        </Boton>
+      )}
+      {(fase === "entrar" || fase === "crear") && (
+        <p className="flex items-center justify-center gap-2 text-sm text-texto-secundario">
+          <IconoEscudo /> Tus datos se mantienen protegidos.
+        </p>
       )}
     </section>
   );

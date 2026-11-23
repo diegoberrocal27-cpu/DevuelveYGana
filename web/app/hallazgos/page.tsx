@@ -6,29 +6,12 @@ import Aviso from "@/componentes/Aviso";
 import { estilosBoton } from "@/componentes/Boton";
 import Cargando from "@/componentes/Cargando";
 import TarjetaPublicacion from "@/componentes/TarjetaPublicacion";
-import {
-  crearAlmacenDeHallazgosSupabase,
-  crearListarCatalogo,
-  type ClienteSupabaseServidor,
-  type HallazgoPublico,
-} from "@/servidor/hallazgos";
-import { clienteDelServidor } from "@/servidor/supabase-servidor";
+import { leerCatalogo } from "@/servidor/catalogo-publico";
+import { fechaDeHoyEnLima } from "@/servidor/hallazgos";
 
 export const metadata: Metadata = {
   title: "Objetos encontrados · DevuelveyGana",
 };
-
-/** Lee el catálogo en el servidor. Devuelve null si Supabase no está configurado o no responde. */
-async function leerCatalogo(): Promise<HallazgoPublico[] | null> {
-  const db = clienteDelServidor();
-  if (!db) return null;
-  try {
-    return await crearListarCatalogo(crearAlmacenDeHallazgosSupabase(db as unknown as ClienteSupabaseServidor))();
-  } catch (causa) {
-    console.error(`[hallazgos] ${causa instanceof Error ? causa.message : "No se pudo leer el catálogo"}`);
-    return null;
-  }
-}
 
 async function ListaDeHallazgos() {
   // El catálogo se lee en cada visita para mostrar siempre lo último publicado.
@@ -41,9 +24,10 @@ async function ListaDeHallazgos() {
   if (hallazgos.length === 0) {
     return <Aviso tipo="info">Todavía no hay objetos encontrados publicados.</Aviso>;
   }
+  const hoy = fechaDeHoyEnLima();
 
   return (
-    <ul className="grid gap-3 sm:grid-cols-2">
+    <ul className="flex flex-col gap-3">
       {hallazgos.map((hallazgo) => (
         <li key={hallazgo.id}>
           <TarjetaPublicacion
@@ -51,6 +35,7 @@ async function ListaDeHallazgos() {
             categoria={hallazgo.categoria}
             distrito={hallazgo.distrito}
             dia={hallazgo.dia}
+            hoy={hoy}
           />
         </li>
       ))}
