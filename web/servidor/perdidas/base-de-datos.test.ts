@@ -62,7 +62,7 @@ const contar = async (tabla: string, dueno?: string) =>
     ).rows[0].n,
   );
 
-async function como<T>(rol: "anon" | "authenticated", usuarioId: string | null, accion: () => Promise<T>): Promise<T> {
+async function como<T>(rol: "anon" | "authenticated" | "service_role", usuarioId: string | null, accion: () => Promise<T>): Promise<T> {
   await db.query("select set_config('request.jwt.claim.sub',$1,false)", [usuarioId ?? ""]);
   await db.exec(`set role ${rol}`);
   try {
@@ -73,6 +73,12 @@ async function como<T>(rol: "anon" | "authenticated", usuarioId: string | null, 
 }
 
 describe("registrar_perdida (HU-02)", () => {
+  test("el rol del servidor puede registrar aunque el proyecto no dé permisos por defecto", async () => {
+    const dueno = await usuario();
+    const respuesta = await como("service_role", null, () => registrar(dueno));
+    expect(respuesta.estado).toBe("creada");
+  });
+
   test("con 2 rasgos guarda la pérdida activa y sus rasgos en un solo paso", async () => {
     const dueno = await usuario();
     const respuesta = await registrar(dueno);
