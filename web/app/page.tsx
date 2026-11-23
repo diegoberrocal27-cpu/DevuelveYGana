@@ -18,6 +18,9 @@ export default function Home() {
         <Link href="/encontre" className={estilosBoton("secundario", true)}>
           Encontré algo
         </Link>
+        <Link href="/hallazgos" className="py-2 text-center font-semibold text-turquesa-oscuro underline-offset-4 hover:underline">
+          Ver objetos encontrados
+        </Link>
       </div>
     </div>
   );
