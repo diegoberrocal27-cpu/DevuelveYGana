@@ -1,6 +1,6 @@
 // Reglas de validación reutilizables. Cada regla devuelve un mensaje de error en español o null si el valor es válido.
 
-export type Regla = (valor: string) => string | null;
+export type Regla = (valor: string, valores?: Record<string, string>) => string | null;
 
 export const requerido =
   (mensaje = "Este campo es obligatorio."): Regla =>
@@ -44,7 +44,7 @@ export function validar<Campo extends string>(
   const errores: Errores<Campo> = {};
   for (const campo of Object.keys(reglas) as Campo[]) {
     for (const regla of reglas[campo] ?? []) {
-      const error = regla(valores[campo] ?? "");
+      const error = regla(valores[campo] ?? "", valores);
       if (error) {
         errores[campo] = error;
         break;

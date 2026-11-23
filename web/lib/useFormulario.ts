@@ -38,5 +38,5 @@ export function useFormulario<Campo extends string>(
     setErrores({});
   }
 
-  return { valores, errores, cambiar, enviar, reiniciar };
+  return { valores, errores, cambiar, enviar, reiniciar, fijarErrores: setErrores };
 }
