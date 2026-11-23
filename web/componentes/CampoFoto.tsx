@@ -10,12 +10,25 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "accept"> & {
   error?: string;
   ayuda?: string;
   ref?: Ref<HTMLInputElement>;
+  /** Nombre del archivo ya elegido (por ejemplo, al volver a este paso). */
+  archivoElegido?: string;
 };
 
 /** Campo para elegir una foto (cámara o galería) y ver el nombre del archivo elegido. */
-export default function CampoFoto({ name, id, etiqueta, error, ayuda, required, onChange, ref, ...resto }: Props) {
+export default function CampoFoto({
+  name,
+  id,
+  etiqueta,
+  error,
+  ayuda,
+  required,
+  onChange,
+  ref,
+  archivoElegido = "",
+  ...resto
+}: Props) {
   const idCampo = id ?? name;
-  const [nombre, setNombre] = useState("");
+  const [nombre, setNombre] = useState(archivoElegido);
   const idAyuda = ayuda ? `${idCampo}-ayuda` : undefined;
   const idError = error ? `${idCampo}-error` : undefined;
 

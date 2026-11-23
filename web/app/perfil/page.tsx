@@ -58,7 +58,8 @@ const mensajes: Record<string, string> = {
 function mensajeDeAuth(error: { code?: string; message?: string; status?: number }): string {
   const codigo = error.code ?? "";
   if (codigo === "invalid_credentials") return "Correo o contraseña incorrectos.";
-  if (codigo === "email_not_confirmed") return "Primero confirma tu correo con el enlace que te enviamos.";
+  if (codigo === "email_not_confirmed") return "Primero confirma tu correo con el código que te enviamos.";
+  if (codigo === "otp_expired") return "El código es incorrecto o ya venció. Pide uno nuevo.";
   if (codigo === "weak_password") return `La contraseña es muy débil. Usa al menos ${LARGO_MINIMO_CLAVE} caracteres.`;
   if (codigo === "same_password") return "La nueva contraseña debe ser distinta de la anterior.";
   if (codigo.includes("rate_limit") || error.status === 429) {
@@ -92,7 +93,7 @@ function CamposCelularYDistrito() {
         pattern="9[0-9]{8}"
         maxLength={9}
         required
-        ayuda="9 dígitos, empezando por 9. Lo verificaremos por WhatsApp una sola vez."
+        ayuda="9 dígitos, empezando por 9."
       />
       <Selector name="distrito" etiqueta="Distrito de residencia" opciones={opcionesDistrito} required />
     </>
@@ -228,7 +229,13 @@ export default function Pagina() {
     const correo = texto(campos, "correo");
     const { error } = await db!.auth.signInWithPassword({ email: correo, password: String(campos.clave ?? "") });
     if (error) {
-      if (error.code === "email_not_confirmed") setCorreoPendiente(correo);
+      if (error.code === "email_not_confirmed") {
+        // Cuenta creada pero sin confirmar: se le reenvía el código y se le pide.
+        setCorreoPendiente(correo);
+        setFase("revisaCorreo");
+        await db!.auth.resend({ type: "signup", email: correo });
+        return setMensaje({ tipo: "info", texto: "Tu correo aún no está confirmado. Te enviamos un código nuevo." });
+      }
       setMensaje({ tipo: "error", texto: mensajeDeAuth(error) });
     }
   }
@@ -245,12 +252,12 @@ export default function Pagina() {
 
     const celular = texto(campos, "celular");
     const distrito = texto(campos, "distrito");
-    const disponible = await consultar("", "disponible", { celular, distrito });
+    const disponible = await consultar("", "disponible", { correo, celular, distrito });
     if (disponible.estado !== "disponible") {
       return setMensaje({ tipo: "error", texto: mensajes[disponible.estado] ?? mensajes.servicio });
     }
 
-    // El celular se guarda en este navegador hasta que vuelva del enlace del correo (vence en 24 h, como el enlace).
+    // El celular se guarda en este navegador hasta que confirme el correo con el código.
     localStorage.setItem(BORRADOR, JSON.stringify({ correo, celular, distrito, vence: Date.now() + 24 * 3600 * 1000 }));
     const { data, error } = await db!.auth.signUp({
       email: correo,
@@ -265,7 +272,13 @@ export default function Pagina() {
       setCorreoPendiente(correo);
       setFase("revisaCorreo");
     }
-    // Si Supabase no pide confirmar el correo, llega la sesión y el efecto de arriba envía el código.
+    // Si Supabase no pide confirmar el correo, llega la sesión y el efecto de arriba completa el registro.
+  }
+
+  /** Confirma el correo con el código de 6 dígitos. Al confirmar llega la sesión y se completa el registro. */
+  async function confirmarCorreo(campos: Record<string, FormDataEntryValue>) {
+    const { error } = await db!.auth.verifyOtp({ email: correoPendiente, token: texto(campos, "codigo"), type: "email" });
+    if (error) setMensaje({ tipo: "error", texto: mensajeDeAuth(error) });
   }
 
   async function reenviarConfirmacion() {
@@ -277,7 +290,7 @@ export default function Pagina() {
     setMensaje(
       error
         ? { tipo: "error", texto: mensajeDeAuth(error) }
-        : { tipo: "info", texto: "Te reenviamos el enlace. Revisa también spam y promociones." },
+        : { tipo: "info", texto: "Te enviamos un código nuevo. Revisa también spam y promociones." },
     );
   }
 
@@ -327,10 +340,7 @@ export default function Pagina() {
 
   return (
     <section className="mx-auto flex w-full max-w-md flex-col gap-5">
-      <div className="flex flex-col gap-1">
-        <p className="text-sm font-semibold text-turquesa-oscuro">Tu espacio</p>
-        <h1 className="text-3xl font-bold leading-tight">Mi perfil</h1>
-      </div>
+      <h1 className="text-3xl font-bold leading-tight">Mi perfil</h1>
 
       {conSesion && (
         <div className="flex items-center gap-4 rounded-2xl border border-borde bg-superficie p-4 shadow-sm">
@@ -346,7 +356,7 @@ export default function Pagina() {
               </span>
             ) : (
               <span className="w-fit rounded-full bg-aviso-claro px-2.5 py-0.5 text-xs font-semibold text-aviso">
-                Falta verificar el celular
+                Falta completar el registro
               </span>
             )}
           </div>
@@ -388,7 +398,8 @@ export default function Pagina() {
       {fase === "crear" && (
         <form className="flex flex-col gap-4" onSubmit={(e) => alEnviar(e, crearCuenta)}>
           <p className="text-texto-secundario">
-            Solo la primera vez confirmamos tu correo y tu celular. Después entrarás con tu correo y contraseña.
+            Solo la primera vez te enviaremos un código a tu correo para confirmarlo. Después entrarás con tu correo y
+            contraseña.
           </p>
           <CampoTexto name="correo" etiqueta="Correo electrónico" type="email" autoComplete="email" required />
           <CampoTexto
@@ -412,18 +423,33 @@ export default function Pagina() {
       )}
 
       {fase === "revisaCorreo" && (
-        <div className="flex flex-col gap-4">
-          <Aviso tipo="info" titulo="Revisa tu correo">
-            Te enviamos un enlace a {correoPendiente}. Ábrelo en este mismo navegador para confirmar tu correo; luego
-            verificaremos tu celular.
-          </Aviso>
+        <form className="flex flex-col gap-4" onSubmit={(e) => alEnviar(e, confirmarCorreo)}>
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-semibold">Revisa tu correo</h2>
+            <p className="text-texto-secundario">
+              Escribe el código de 6 dígitos que enviamos a <span className="font-semibold text-marino">{correoPendiente}</span>.
+              Si no lo ves, busca en spam o promociones.
+            </p>
+          </div>
+          <CampoTexto
+            name="codigo"
+            etiqueta="Código del correo"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="[0-9]{6,10}"
+            maxLength={10}
+            required
+          />
+          <Boton type="submit" anchoCompleto cargando={ocupado}>
+            Confirmar mi correo
+          </Boton>
           <Boton variante="secundario" anchoCompleto disabled={ocupado} onClick={() => void ejecutar(reenviarConfirmacion)}>
-            Reenviar enlace
+            Enviarme otro código
           </Boton>
-          <Boton variante="secundario" anchoCompleto onClick={() => cambiarFase("entrar")}>
-            Ya lo confirmé, quiero entrar
-          </Boton>
-        </div>
+          <button type="button" className="text-sm font-semibold text-turquesa-oscuro" onClick={() => cambiarFase("entrar")}>
+            Volver a entrar
+          </button>
+        </form>
       )}
 
       {fase === "olvido" && (
@@ -464,10 +490,10 @@ export default function Pagina() {
             alEnviar(e, (c) => operar("registrar", { celular: texto(c, "celular"), distrito: texto(c, "distrito") }))
           }
         >
-          <p className="text-texto-secundario">Falta verificar tu celular para publicar o reclamar.</p>
+          <p className="text-texto-secundario">Falta registrar tu celular y distrito para publicar o reclamar.</p>
           <CamposCelularYDistrito />
           <Boton type="submit" anchoCompleto cargando={ocupado}>
-            Enviar código por WhatsApp
+            Continuar
           </Boton>
         </form>
       )}

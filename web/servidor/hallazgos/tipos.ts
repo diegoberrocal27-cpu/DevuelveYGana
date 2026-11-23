@@ -40,12 +40,17 @@ export type HallazgoNuevo = {
   buenaFeAceptada: true;
 };
 
-/** Lo único que ve el público: categoría, distrito y día (más el id). */
+/**
+ * Lo único que ve el público: categoría, distrito, día (más el id) y, si existe, un enlace temporal a la
+ * copia pública de la foto (difuminada si es DNI). Nunca la descripción, la foto original ni quién lo encontró.
+ */
 export type HallazgoPublico = {
   id: string;
   categoria: string;
   distrito: string;
   dia: string;
+  /** URL firmada de corta duración a la copia pública. */
+  foto?: string;
 };
 
 export interface AlmacenDeHallazgos {
@@ -60,8 +65,11 @@ export interface AlmacenDeFotos {
   borrar(bucket: BucketDeFotos, ruta: string): Promise<void>;
 }
 
-/** Genera la copia difuminada (SP-03). Lanza error si el archivo no es una imagen. */
-export type Difuminar = (original: Uint8Array) => Promise<Uint8Array>;
+/**
+ * Genera la copia pública de la foto: difuminada si es un DNI (SP-03), nítida y sin metadatos si no.
+ * Lanza error si el archivo no es una imagen. (Se guarda en el bucket "fotos-difuminadas" por compatibilidad.)
+ */
+export type Difuminar = (original: Uint8Array, categoria: string) => Promise<Uint8Array>;
 
 /**
  * Anota el evento del piloto. Tiene la misma forma que `registrarEvento` de T-04,

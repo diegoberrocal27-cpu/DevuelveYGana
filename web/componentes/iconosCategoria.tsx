@@ -88,3 +88,28 @@ export function IconoEscudo({ className = "h-5 w-5" }: Props) {
     </svg>
   );
 }
+
+export function IconoReloj({ className = "h-4 w-4" }: Props) {
+  return (
+    <svg {...comunes} className={className}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </svg>
+  );
+}
+
+export function IconoAtras({ className = "h-5 w-5" }: Props) {
+  return (
+    <svg {...comunes} className={className}>
+      <path d="m15 6-6 6 6 6" />
+    </svg>
+  );
+}
+
+export function IconoMas({ className = "h-5 w-5" }: Props) {
+  return (
+    <svg {...comunes} className={className}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}

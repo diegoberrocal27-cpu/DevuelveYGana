@@ -58,6 +58,24 @@ describe("HU-03: publicar un hallazgo", () => {
     expect(anotarEvento).toHaveBeenCalledWith("hallazgo_publicado", HALLADOR.id, "Ayacucho");
   });
 
+  test("la copia pública se prepara según la categoría (solo el DNI se difumina)", async () => {
+    const difuminar = vi.fn(async () => new Uint8Array([9]));
+    const memoria = crearAlmacenesEnMemoria();
+    const publicar = crearPublicarHallazgo({
+      almacen: memoria.hallazgos,
+      fotos: memoria.fotos,
+      difuminar,
+      anotarEvento: async () => {},
+      generarId: () => "id-dni",
+      hoy: () => HOY,
+      anotarError: () => {},
+    });
+
+    await publicar(HALLADOR, datos({ categoria: "dni" }));
+
+    expect(difuminar).toHaveBeenCalledWith(FOTO.contenido, "dni");
+  });
+
   test("sin marcar la declaración de buena fe no se publica (RN-17)", async () => {
     const { memoria, publicar } = preparar();
 
@@ -146,7 +164,7 @@ describe("HU-03: publicar un hallazgo", () => {
 });
 
 describe("HU-03: catálogo público", () => {
-  test("solo muestra id, categoría, distrito y día; nunca la descripción ni las fotos", async () => {
+  test("solo muestra id, categoría, distrito, día y foto difuminada; nunca la descripción ni la original", async () => {
     const { memoria, publicar } = preparar();
     await publicar(HALLADOR, datos());
     // Aunque el almacén devolviera de más, el catálogo aplica la lista blanca.
@@ -156,7 +174,7 @@ describe("HU-03: catálogo público", () => {
     const catalogo = await crearListarCatalogo(memoria.hallazgos)();
 
     expect(catalogo).toEqual([{ id: "id-1", categoria: "celular", distrito: "Ayacucho", dia: "2026-11-21" }]);
-    expect(JSON.stringify(catalogo)).not.toMatch(/funda|original|difuminada|hallador/i);
+    expect(JSON.stringify(catalogo)).not.toMatch(/funda|original|hallador/i);
   });
 
   test("muestra primero lo más reciente", async () => {

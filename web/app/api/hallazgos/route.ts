@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { crearAlmacenSupabase, crearRegistrarEvento } from "@/servidor/eventos";
-import { difuminarFoto } from "@/servidor/fotos/difuminar";
+import { prepararCopiaPublica } from "@/servidor/fotos/difuminar";
 import {
   crearAlmacenDeFotosSupabase,
   crearAlmacenDeHallazgosSupabase,
@@ -43,7 +43,7 @@ export async function POST(peticion: Request) {
     publicar: crearPublicarHallazgo({
       almacen: crearAlmacenDeHallazgosSupabase(cliente),
       fotos: crearAlmacenDeFotosSupabase(cliente),
-      difuminar: difuminarFoto,
+      difuminar: prepararCopiaPublica,
       anotarEvento: (accion, usuarioId, distrito) => registrarEvento(accion, usuarioId, distrito),
     }),
   });
