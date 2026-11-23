@@ -10,11 +10,9 @@ do $$ begin
   if not exists (select 1 from pg_roles where rolname = 'service_role')  then create role service_role  nologin noinherit bypassrls; end if;
 end $$;
 
--- Como en Supabase: los roles de la API ven el esquema public y el servidor tiene todo por defecto.
+-- Como un proyecto Supabase creado sin acceso automático a la API: los roles ven el esquema public,
+-- pero ninguno recibe permisos por defecto sobre lo que se crea. Cada migración debe otorgarlos.
 grant usage on schema public to anon, authenticated, service_role;
-alter default privileges in schema public grant all on tables    to anon, authenticated, service_role;
-alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
-alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
 
 create schema if not exists auth;
 create table auth.users (
